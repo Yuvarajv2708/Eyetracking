@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>WebGazer Calibration Page</title>
+    <script src="https://unpkg.com/jspsych@7.3.4"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jspsych/jspsych@jspsych@7.0.0/examples/js/webgazer/webgazer.js"></script>
+    <script src="https://unpkg.com/@jspsych/extension-webgazer@1.0.3"></script>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #calibration-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: red;
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+    <div id="calibration-dot"></div>
+    <script>
+        webgazer.setRegression("ridge");
+        webgazer.addRegressionModule("newReg", NewRegConstructor);
+        webgazer.setTracker("TFFacemesh");
+        webgazer.addTrackerModule("newTracker", NewTrackerConstructor);
+        webgazer.util.bound(prediction);
+        prediction.x;
+        prediction.y;
+        webgazer.setGazeListener(function(data, elapsedTime) {
+            if (data == null) {
+                return;
+            }
+            var xprediction = data.x;
+            var yprediction = data.y;
+            console.log(elapsedTime);
+var dot = document.getElementById("calibration-dot");
+            dot.style.left = xprediction + "px";
+            dot.style.top = yprediction + "px";
+        }).begin();
+        var calibration_trial = {
+            type: 'html-keyboard-response',
+            stimulus: '<p>Look at the dot and press any key to continue.</p>',
+            choices: ['anykey'],
+            data: {
+                calibration: 'start'
+            },
+            on_start: function(trial) {
+                webgazer.showCalibrationBox(13);
+            },
+            on_finish: function(data) {
+                webgazer.pause();
+                data.calibration = 'complete';
+            }
+        };
+        jsPsych.init({
+            timeline: [calibration_trial],
+            on_finish: function() {
+                //redirect to the next page after calibration is complete
+                window.location.href = "calibration_complete.html";
+            }
+        });
+    </script>
+</body>
+</html>

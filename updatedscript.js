@@ -4,22 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebGazer Example</title>
-    <script src="https://cdn.jsdelivr.net/npm/webgazer@2.0.0-alpha.11/build/webgazer.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/heatmap.js/2.0.2/heatmap.min.js"></script>
+    <script src="webgazer.js"></script>
+    <script src="heatmap.js"></script>
     <style>
         body {
-            background-image: url('https://source.unsplash.com/random/1600x900');
+            background-image:url('wp1846480-black-wallpapers.jpg');
             background-size: cover;
             background-position: center;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            position: relative;
         }
         #gaze-point {
-            position: absolute;
+            position: absolute
             background-color: red;
             width: 10px;
             height: 10px;
@@ -37,7 +31,7 @@
             display: none;
         }
         #image {
-            position: absolute;
+            position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -45,7 +39,7 @@
             max-height: 100%;
             display: none;
         }
-        #timer{
+        #timer {
             position: fixed;
             bottom: 10px;
             right: 10px;
@@ -73,7 +67,7 @@
     <button id="start-button">Start</button>
     <button id="stop-button">Stop</button>
     <div id="gaze-point"></div>
-    <img id="image" src="path/to/image.jpg">
+    <img id="image" src="wp1846480-black-wallpapers.jpg">
     <div id="timer">1:00</div>
     <script>
         // Initialize WebGazer
@@ -92,14 +86,33 @@
         var circles = [];
         var collectedPoints = 0;
 
-        // Show the message box and start calibration
+        // Start calibration and display calibration completing message
         function startCalibration() {
-            document.getElementById('message-box').style.display = 'block';
             webgazer.showFaceOverlay(true);
             webgazer.showFaceFeedbackBox(true);
             webgazer.showPredictionPoints(true);
             webgazer.showVideo(true);
-            webgazer.startCalibration();
+            webgazer.beginCalibration();
+            webgazer.setGazeListener(function(data, elapsedTime) {
+                if (collectedPoints < 90) {
+                    if (circles[Math.floor(collectedPoints / 2)] === undefined) {
+                        circles[Math.floor(collectedPoints / 2)] = [];
+                    }
+                    circles[Math.floor(collectedPoints / 2)].push({
+                        x: data.x,
+                        y: data.y
+                   });
+                    collectedPoints++;
+                    if (collectedPoints === 90) {
+                        // Calibration completed
+                        document.getElementById('message-box').innerHTML = 'Calibration completed!';
+                        document.getElementById('message-box').style.backgroundColor = 'green';
+                        setTimeout(function() {
+                            window.location.href = 'studypage.html';
+                        }, 2000);
+                    }
+                }
+            });
         }
 
         // Stop calibration and hide the message box
@@ -114,7 +127,7 @@
             // Display the image and timer
             var image = document.getElementById('image');
             var timer = document.getElementById('timer');
-            image.src = 'https://source.unsplash.com/random/1600x900';
+            image.src = 'wp1846480-black-wallpapers.jpg';
             image.style.display = 'block';
             timer.style.display = 'block';
 
@@ -148,7 +161,7 @@
             webgazer.setGazeListener(function(data, elapsedTime) {
                 data.push({
                     x: data.x * window.innerWidth,
-                    y: data.y* window.innerHeight
+                    y: data.y * window.innerHeight
                 });
             });
             setTimeout(function() {
@@ -175,23 +188,6 @@
         webgazer.showPredictionPoints(true);
         webgazer.showVideo(true);
         webgazer.setRegression('ridge')
-            .setGazeListener(function(data, elapsedTime) {
-                if (collectedPoints < 16) {
-                    if (circles[Math.floor(collectedPoints / 2)] === undefined) {
-                        circles[Math.floor(collectedPoints / 2)] = [];
-                    }
-                    circles[Math.floor(collectedPoints / 2)].push({
-                        x: data.x,
-                        y: data.y
-                    });
-                    collectedPoints++;
-                    if (collectedPoints === 16) {
-                        // Calibration completed
-                        document.getElementById('message-box').innerHTML = 'Calibration completed!';
-                        document.getElementById('message-box').style.backgroundColor = 'green';
-                    }
-                }
-            })
             .begin();
     </script>
 </body>
