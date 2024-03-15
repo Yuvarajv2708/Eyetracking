@@ -8,15 +8,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/heatmap.js/2.0.2/heatmap.min.js"></script>
     <style>
         body {
-            background-image: url('https://source.unsplash.com/random/1600x900');
+            background-image: url('wp1846480-black-wallpapers.jpg');
             background-size: cover;
             background-position: center;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            position: relative;
         }
         #gaze-point {
             position: absolute;
@@ -37,7 +31,7 @@
             display: none;
         }
         #image {
-            position: absolute;
+            position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -45,11 +39,11 @@
             max-height: 100%;
             display: none;
         }
-        #timer{
+        #timer {
             position: fixed;
             bottom: 10px;
             right: 10px;
-            background-color: white;
+           background-color: white;
             padding: 5px 10px;
             border-radius: 5px;
             display: none;
@@ -114,7 +108,7 @@
             // Display the image and timer
             var image = document.getElementById('image');
             var timer = document.getElementById('timer');
-            image.src = 'https://source.unsplash.com/random/1600x900';
+            image.src = 'path/to/image.jpg';
             image.style.display = 'block';
             timer.style.display = 'block';
 
@@ -148,7 +142,7 @@
             webgazer.setGazeListener(function(data, elapsedTime) {
                 data.push({
                     x: data.x * window.innerWidth,
-                    y: data.y* window.innerHeight
+                    y: data.y * window.innerHeight
                 });
             });
             setTimeout(function() {
